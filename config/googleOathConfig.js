@@ -1,6 +1,6 @@
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-const userModel = require('../models/userModel.js');
-const passport = require('password');
+const {userModel} = require('../models/userModel.js');
+const passport = require('passport');
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -18,8 +18,8 @@ passport.use(new GoogleStrategy({
         })
 
         await user.save();
-        cb(null,user);    // this is required to pass the control forward 
       }
+      cb(null,user);    // this is required to pass the control forward 
     } catch (error) {
       cb(error,false);
     }
