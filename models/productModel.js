@@ -20,17 +20,17 @@ const productSchema =mongoose.Schema({
         required:true,
     },
     stock:{
-        type:Boolean,
+        type:Number,
         required:true,
         default:true,
     },
     description:{
         type:String,
-        required:false,
+
     },
-    imageURL:{
-        type:String,
-        required:true,
+    image:{
+        type:Buffer,
+   
     },
 });
 
@@ -41,8 +41,8 @@ const validateProduct = (data) =>{
         price: joi.number().min(10).required(),
         category: joi.string().required(),
         description: joi.string().optional(),
-        imageURL: joi.string().optional(),
-        stock: joi.boolean().required(),
+        image: joi.string().optional(),
+        stock: joi.number().required(),
     })
     return schema.validate(data);
 }

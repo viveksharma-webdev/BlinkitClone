@@ -1,10 +1,13 @@
 const express = require("express");
 const app = express();
-const indexRouter = require('./routes');
-const authRouter = require('./routes/auth.js');
 const connectDB = require('./config/mongoose.js');
 const path = require('path');
 const expressSession = require('express-session');
+const cookieParser = require('cookie-parser');
+const indexRouter = require('./routes');
+const authRouter = require('./routes/auth.js');
+const adminRouter = require('./routes/admin.js');
+const productRouter = require('./routes/product.js');
 
 require("dotenv").config();
 require("./config/googleOathConfig.js");
@@ -18,10 +21,13 @@ app.use(expressSession({
      saveUninitialized:false,
      secret: process.env.SESSION_SECRET,
 }));
+app.use(cookieParser());
 
 
 app.use("/",indexRouter);
 app.use("/auth", authRouter);
+app.use('/admin', adminRouter);
+app.use('/product',productRouter);
 
 app.listen(3000,()=>{
      connectDB();

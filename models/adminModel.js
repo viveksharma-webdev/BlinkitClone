@@ -13,7 +13,7 @@ const adminSchema = mongoose.Schema({
         type:String,
         required:true,
         unique:true,
-        match:/^[\-w\.]+@([\w-]+\.)+[\w-]{2,4}$/
+        match: /^[\w\.-]+@([\w-]+\.)+[\w-]{2,4}$/
     },
     password:{
         type:String,
@@ -32,7 +32,7 @@ const adminSchema = mongoose.Schema({
 const validateAdmin = (data)=>{
     const schema= Joi.object({
         name:Joi.string().min(3).max(50).required(),
-        email:Joi.sring().email().required(),
+        email:Joi.string().email().required(),
         password:Joi.string().min(6).required(),
         role:Joi.string().valid("admin","superadmin").required(),
     });
