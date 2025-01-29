@@ -8,6 +8,8 @@ const indexRouter = require('./routes');
 const authRouter = require('./routes/auth.js');
 const adminRouter = require('./routes/admin.js');
 const productRouter = require('./routes/product.js');
+const categoriesRouter = require('./routes/categories.js');
+const userRouter = require('./routes/user.js');
 
 require("dotenv").config();
 require("./config/googleOathConfig.js");
@@ -21,6 +23,8 @@ app.use(expressSession({
      saveUninitialized:false,
      secret: process.env.SESSION_SECRET,
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(cookieParser());
 
 
@@ -28,7 +32,8 @@ app.use("/",indexRouter);
 app.use("/auth", authRouter);
 app.use('/admin', adminRouter);
 app.use('/product',productRouter);
-
+app.use('/categories',categoriesRouter);
+app.use('/users', userRouter);
 app.listen(3000,()=>{
      connectDB();
 });

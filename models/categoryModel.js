@@ -1,4 +1,4 @@
-const mongoose = require("mongooose");
+const mongoose = require("mongoose");
 const Joi = require("joi");
 
 const categorySchema = mongoose.Schema({

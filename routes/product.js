@@ -9,7 +9,7 @@ router.get('/', async (req,res)=>{
    const product = await productModel.find();
 
    if(!product) return res.status(404).json({message:"Error, not found"});
-   res.send(product);
+   res.render("index");
 
 });
 
@@ -43,6 +43,35 @@ router.post('/', upload.single("image"),async (req,res)=>{
    catch(error){
       return res.status(400).send(error.message);
    }
+})
+
+router.delete('/delete/:id',validateAdmin, async(req,res)=>{
+   
+   //console.log(req.user),   this will contain admin and token info , check before deleting a product 
+   try{
+
+      if(req.user.admin){
+      const product = await productModel.findOneAndDelete({_id: req.params.id});
+      return res.redirect('/admin/products');
+      }
+
+      res.send("Unauthorized to delete any product")
+   }catch(error){
+    console.log("Error in deleting a product"+ error.message);
+   }
+});
+
+router.post('/delete', validateAdmin, async(req,res)=>{
+   try{
+   if(req.user.admin){
+      let product = await productModel.findOneAndDelete({_id: req.body.product_id})
+      return res.redirect('back');
+   };
+   res.send("Unauthorized to delete any product")
+  }
+  catch(error){
+    console.log("Error in deleting a product"+ error.message);
+  }
 })
 
 

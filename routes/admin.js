@@ -25,7 +25,7 @@ if(process.env.NODE_ENV!== undefined && process.env.NODE_ENV === 'development'){
 
         await user.save();
 
-        let token = jwt.sign({email: "admin@gmail.com"},process.env.JWT_SECRET_KEY);
+        let token = jwt.sign({email: "admin@gmail.com", admin: true},process.env.JWT_SECRET_KEY);
         res.cookie("token", token);
         res.send("admin created successfully");
         
@@ -50,19 +50,42 @@ router.post('/login', async (req,res)=>{
     let valid = await bcrypt.compare(password, admin.password);
 
     if(valid){
-        let token = jwt.sign({email: "admin@blink.com"},process.env.JWT_SECRET_KEY);
+        let token = jwt.sign({email: "admin@gmail.com", admin: true},process.env.JWT_SECRET_KEY);
         res.cookie("token", token);
         res.redirect("/admin/dashboard");
     }
 });
 
 router.get('/dashboard',validateAdmin ,async (req,res)=>{
-    res.render('admin_dashboard');
+    const prodcount =  await productModel.countDocuments();
+    const categcount =  await categoryModel.countDocuments();
+    res.render('admin_dashboard',{prodcount,categcount});
 })
 
 router.get('/products', validateAdmin, async (req,res)=>{
-    let products = await productModel.find();
-    res.render('admin_products',{products});
+    const resultArray = await productModel.aggregate([
+        {
+            $group:{
+                _id: "$category",
+                products:{$push:"$$ROOT" }
+            },
+        },
+        {
+            $project:{
+                _id:0,
+                category:"$_id",
+                products:{$slice: ["$products",10]}
+            }
+        }
+    ]);
+
+    // convert an array into an object
+    const resultObject = resultArray.reduce((acc,item)=>{
+           acc[item.category]=item.product;
+           return acc;
+    },{});
+
+    res.render('admin_products',{products: resultObject});
 });
 
 router.get('/logout', validateAdmin , async(req,res)=>{
