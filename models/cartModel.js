@@ -5,16 +5,18 @@ const cartSchema = mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"userModel",
-        required:true,
+        required:true
     },
     products:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"productModel",
-        required:true,
+        required:true
     }],
-    totalPrice:Number,
+    totalPrice:{ 
+    type:Number,
     required:true,
     min:0
+    }
 },{timestamps:true});
 
 // Joi validation

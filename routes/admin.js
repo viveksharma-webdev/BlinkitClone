@@ -4,7 +4,7 @@ const {adminModel} = require('../models/adminModel.js');
 const {productModel} = require('../models/productModel.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const {validateAdmin,isAuthenticated} = require('../middlewares/admin.js');
+const {validateAdmin,} = require('../middlewares/admin.js');
 
 require("dotenv").config();
 

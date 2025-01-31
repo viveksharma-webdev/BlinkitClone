@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const connectDB = require('./config/mongoose.js');
+const passport = require('passport');
 const path = require('path');
 const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -10,6 +11,7 @@ const adminRouter = require('./routes/admin.js');
 const productRouter = require('./routes/product.js');
 const categoriesRouter = require('./routes/categories.js');
 const userRouter = require('./routes/user.js');
+const cartRouter = require('./routes/cart.js');
 
 require("dotenv").config();
 require("./config/googleOathConfig.js");
@@ -34,6 +36,8 @@ app.use('/admin', adminRouter);
 app.use('/products',productRouter);
 app.use('/categories',categoriesRouter);
 app.use('/users', userRouter);
+app.use('/cart', cartRouter);
+
 app.listen(3000,()=>{
      connectDB();
 });
