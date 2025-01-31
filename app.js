@@ -31,7 +31,7 @@ app.use(cookieParser());
 app.use("/",indexRouter);
 app.use("/auth", authRouter);
 app.use('/admin', adminRouter);
-app.use('/product',productRouter);
+app.use('/products',productRouter);
 app.use('/categories',categoriesRouter);
 app.use('/users', userRouter);
 app.listen(3000,()=>{

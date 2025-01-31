@@ -2,14 +2,37 @@ const express = require('express');
 const router = express.Router();
 const {productModel,validateProduct} = require('../models/productModel.js');
 const {categoryModel,validateCategory} = require('../models/categoryModel.js');
-const validateAdmin = require('../middlewares/admin.js');
+const {validateAdmin,isAuthenticated} = require('../middlewares/admin.js');
 const upload = require('../config/multerConfig.js');
 
-router.get('/', async (req,res)=>{
-   const product = await productModel.find();
+router.get('/', isAuthenticated, async (req,res)=>{
+   const resultArray = await productModel.aggregate([
+      {
+          $group:{
+              _id: "$category",
+              products:{$push:"$$ROOT" }
+          },
+      },
+      {
+          $project:{
+              _id:0,
+              category:"$_id",
+              products:{$slice: ["$products",10]}
+          }
+      }
+  ]);
 
-   if(!product) return res.status(404).json({message:"Error, not found"});
-   res.render("index");
+  let rnproducts = await productModel.aggregate([
+   {$sample: {size:3}}
+  ])
+
+  // convert an array into an object
+  const resultObject = resultArray.reduce((acc,item)=>{
+         acc[item.category]=item.products;
+         return acc;
+  },{});
+
+  res.render('index',{products: resultObject, rnproducts})
 
 });
 

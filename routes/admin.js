@@ -4,7 +4,7 @@ const {adminModel} = require('../models/adminModel.js');
 const {productModel} = require('../models/productModel.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const validateAdmin = require('../middlewares/admin.js');
+const {validateAdmin,isAuthenticated} = require('../middlewares/admin.js');
 
 require("dotenv").config();
 
@@ -63,7 +63,7 @@ router.get('/dashboard',validateAdmin ,async (req,res)=>{
 })
 
 router.get('/products', validateAdmin, async (req,res)=>{
-    const resultArray = await productModel.aggregate([
+   ; const resultArray = await productModel.aggregate([
         {
             $group:{
                 _id: "$category",
@@ -81,7 +81,7 @@ router.get('/products', validateAdmin, async (req,res)=>{
 
     // convert an array into an object
     const resultObject = resultArray.reduce((acc,item)=>{
-           acc[item.category]=item.product;
+           acc[item.category]=item.products;
            return acc;
     },{});
 
