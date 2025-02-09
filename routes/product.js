@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {productModel,validateProduct} = require('../models/productModel.js');
 const {categoryModel,validateCategory} = require('../models/categoryModel.js');
+const { cartModel, validatecart} = require('../models/cartModel.js');
 const {validateAdmin,isAuthenticated} = require('../middlewares/admin.js');
 const upload = require('../config/multerConfig.js');
 
@@ -22,6 +23,11 @@ router.get('/', isAuthenticated, async (req,res)=>{
       }
   ]);
 
+  let somethingInCart = false;
+
+  let cart = await cartModel.findOne({user: req.session.passport.user})
+  if(cart && cart.products.length > 0 ) somethingInCart = true;
+
   let rnproducts = await productModel.aggregate([
    {$sample: {size:3}}
   ])
@@ -32,9 +38,14 @@ router.get('/', isAuthenticated, async (req,res)=>{
          return acc;
   },{});
 
-  res.render('index',{products: resultObject, rnproducts})
+  res.render('index',{products: resultObject, rnproducts, somethingInCart, cartCount : cart? cart.products.length : 0})
 
 });
+
+
+
+
+
 
 router.post('/', upload.single("image"),async (req,res)=>{
    try{

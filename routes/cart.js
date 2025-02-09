@@ -2,15 +2,34 @@ const express = require('express');
 const router = express.Router();
 const {cartModel, validateCart} = require('../models/cartModel');
 const {productModel} = require('../models/productModel');
-const { isAuthenticated } = require('../middlewares/admin');
+const { isAuthenticated, validateAdmin } = require('../middlewares/admin');
 
 router.get('/',isAuthenticated,  async (req,res)=>{
     // res.send(req.session.passport.user); this conatins all the users detail which is currently logged in
-   
     try{
-    const cart = await cartModel.findOne({user: req.session.passport.user});
+    let cart = await cartModel.findOne({user: req.session.passport.user}).populate("products");
 
-    res.send(cart);
+    let cartDataStructure = {};
+    cart.products.forEach((product)=>{
+        let key = product._id.toString();
+
+        if(cartDataStructure[key]){
+           cartDataStructure[key].quantity +=1;
+
+        }else{
+            cartDataStructure[key]={
+                ...product._doc,
+                quantity:1
+            };
+        };
+
+    });
+
+    let finalArray = Object.values(cartDataStructure);
+    let finalPrice =cart.totalPrice + 54;
+
+    res.render("cart", {cart: finalArray, finalprice : finalPrice});
+
     } catch(error){
         res.send(error.message);
     }
@@ -32,6 +51,8 @@ router.post('/add/:id', async (req,res)=>{
          cart.totalPrice = Number(cart.totalPrice) + Number(product.price);
          await cart.save();
        }
+       res.redirect("back");
+       
     }catch(error){
         res.send(error.message);
     }
@@ -44,17 +65,19 @@ router.get('/remove/:id', isAuthenticated, async (req,res)=>{
 
         if(!cart) return res.send("Something went wrong");
 
-        let index = cart.products.indexof(req.params.id);
+        let index = cart.products.indexOf(req.params.id);
         if(index !== -1){ 
-            cart.products.splice(index,-1);
+            cart.products.splice(index,1);
             cart.totalPrice = Number(cart.totalPrice) - Number(product.price);
+        } else {
+            return res.send("Product not found in cart");
         }
         
         await cart.save();
-        res.send(cart)
+        res.redirect("back");
                
     } catch (error) {
-        res.send(error);
+        res.send(error.message);
     }
 })
 

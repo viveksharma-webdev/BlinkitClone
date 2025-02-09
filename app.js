@@ -12,6 +12,8 @@ const productRouter = require('./routes/product.js');
 const categoriesRouter = require('./routes/categories.js');
 const userRouter = require('./routes/user.js');
 const cartRouter = require('./routes/cart.js');
+const paymentRouter = require('./routes/payment.js');
+const orderRouter = require('./routes/order.js');
 
 require("dotenv").config();
 require("./config/googleOathConfig.js");
@@ -37,6 +39,8 @@ app.use('/products',productRouter);
 app.use('/categories',categoriesRouter);
 app.use('/users', userRouter);
 app.use('/cart', cartRouter);
+app.use('/payment', paymentRouter);
+app.use('/order', orderRouter);
 
 app.listen(3000,()=>{
      connectDB();
